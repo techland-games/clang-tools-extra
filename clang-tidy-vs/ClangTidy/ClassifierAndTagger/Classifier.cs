@@ -8,16 +8,19 @@ using Microsoft.VisualStudio.Text;
 namespace LLVM.ClangTidy
 {
     /// <summary>
-    /// Tag classifier finds every instance of ValidationTag within a given span.
+    /// This class asks implicitly ValidationTagger for text spans containing clang-tidy 
+    /// validation warning in given text buffer (visible text in code).
+    /// Usually single SnapshotSpan is one of visible lines or selections of text in text editor 
+    /// and a Snapshot is the content of a whole file opened in editor window.
     /// </summary>
-    class ValidationClassifier : IClassifier
+    class Classifier : IClassifier
     {
         private IClassificationType ClassificationType;
         private ITagAggregator<ValidationTag> Tagger;
-        private static ValidationClassifier ActiveClassifier = null;
+        private static Classifier ActiveClassifier = null;
         private SnapshotSpan CurrentSpan;
 
-        internal ValidationClassifier(ITagAggregator<ValidationTag> tagger, IClassificationType classificationType)
+        internal Classifier(ITagAggregator<ValidationTag> tagger, IClassificationType classificationType)
         {
             Tagger = tagger;
             ClassificationType = classificationType;
@@ -35,10 +38,12 @@ namespace LLVM.ClangTidy
 
             // After clang-tidy returns new results, tags will be automatically created only for 
             //   newly appearing text lines or focused code window.
-            // To force-refresh tags in current window store single span for the whole file and 
+            // To force-refresh tags in current window, store single span for the whole file and 
             //   call Invalidate() on this span when clang-tidy results are ready.
-            var WholeSpan = new SnapshotSpan(span.Snapshot, 0, span.Snapshot.Length);
-            CurrentSpan = WholeSpan;
+            if (CurrentSpan == null || CurrentSpan.Snapshot != span.Snapshot)
+            {
+                CurrentSpan = new SnapshotSpan(span.Snapshot, 0, span.Snapshot.Length);
+            }
 
             IList<ClassificationSpan> classifiedSpans = new List<ClassificationSpan>();
 

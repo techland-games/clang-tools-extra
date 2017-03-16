@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 namespace LLVM.ClangTidy
 {
     /// <summary>
-    /// Validation tag for ITagger.
+    /// Validation tag for ITagger holding clang-tidy validation warning/error message.
     /// </summary>
     internal class ValidationTag : ITag
     {
@@ -18,8 +18,10 @@ namespace LLVM.ClangTidy
     }
 
     /// <summary>
-    /// This class implements ITagger for ValidationTag.  It is responsible for creating
-    /// ValidationTag TagSpans, which our GlyphFactory will then create glyphs for.
+    /// This class implements ITagger for ValidationTag. It is responsible for creating
+    /// ValidationTag TagSpans for all clang-tidy results inside given code spans. 
+    /// ValidationTags are used then by Classifier for highlighting code using ValidationWarningFormat 
+    /// settings and by QuickInfoSource that will augment Intellisense info for appropriate code.
     /// </summary>
     internal class ValidationTagger : ITagger<ValidationTag>
     {

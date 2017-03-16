@@ -7,6 +7,11 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace LLVM.ClangTidy
 {
+    /// <summary>
+    /// This class creates QuickInfoControllerProvider to be used for 
+    /// augmenting Intellisense quick info when hovering over clang-tidy 
+    /// validation warnings in code.
+    /// </summary>
     [Export(typeof(IIntellisenseControllerProvider))]
     [Name("ClangTidy QuickInfo Controller")]
     [ContentType("text")]

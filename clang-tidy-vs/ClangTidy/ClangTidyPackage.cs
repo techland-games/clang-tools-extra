@@ -23,8 +23,6 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Xml.Linq;
-using System.Diagnostics;
 
 namespace LLVM.ClangTidy
 {

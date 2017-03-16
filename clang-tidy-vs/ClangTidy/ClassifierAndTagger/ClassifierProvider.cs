@@ -8,6 +8,8 @@ using System.Windows.Media;
 namespace LLVM.ClangTidy
 {
     /// <summary>
+    /// This class creates Classifier that will search for clang-tidy validation warnings in 
+    /// visible text. Results will be highlighted in code using ValidationWarningFormat classification.
     /// Export a <see cref="IClassifierProvider"/>
     /// </summary>
     [Export(typeof(IClassifierProvider))]
@@ -29,7 +31,7 @@ namespace LLVM.ClangTidy
             IClassificationType classificationType = ClassificationRegistry.GetClassificationType("clang-tidy-validation");
 
             var tagAggregator = TagAggregatorFactory.CreateTagAggregator<ValidationTag>(buffer);
-            return new ValidationClassifier(tagAggregator, classificationType);
+            return new Classifier(tagAggregator, classificationType);
         }
     }
 

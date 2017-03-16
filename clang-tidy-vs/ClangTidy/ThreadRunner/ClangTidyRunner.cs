@@ -7,7 +7,7 @@ using EnvDTE;
 namespace LLVM.ClangTidy
 {
     /// <summary>
-    /// Launches clang-tidy.exe, waits for results and displays them in output window
+    /// Launches clang-tidy.exe, waits for results and displays them in output window.
     /// </summary>
     public static class ClangTidyRunner
     {
@@ -21,7 +21,7 @@ namespace LLVM.ClangTidy
 
         static ClangTidyRunner()
         {
-            IVsOutputWindow outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+            var outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
             outWindow.CreatePane(ref OutputWindowGuid, OutputWindowTitle, 1, 1);
             outWindow.GetPane(ref OutputWindowGuid, out OutputWindowPane);
 
@@ -45,9 +45,11 @@ namespace LLVM.ClangTidy
 
                     StartBackgroundInfoWorker();
 
-                    OutputWindowPane.OutputStringThreadSafe(">> Running " + ClangTidyExeName + " with arguments: '" + arguments + "'\n");
+                    OutputWindowPane.OutputStringThreadSafe(">> Running " + ClangTidyExeName + 
+                        " with arguments: '" + arguments + "'\n");
 
-                    BackgroundThreadWorker worker = new BackgroundThreadWorker(ExtensionDirPath + "\\" + ClangTidyExeName, arguments);
+                    BackgroundThreadWorker worker = new BackgroundThreadWorker(ExtensionDirPath + 
+                        "\\" + ClangTidyExeName, arguments);
                     worker.ThreadDone += HandleThreadFinished;
 
                     System.Threading.Thread workerThread = new System.Threading.Thread(worker.Run);
@@ -60,18 +62,22 @@ namespace LLVM.ClangTidy
             }
         }
 
+        /// <summary>
+        /// Executed when ThreadDone event fires for thread responsible for launching clang-tidy thread.
+        /// </summary>
         private static void HandleThreadFinished(object sender, EventArgs out_args)
         {
             InfoWorker.CancelAsync();
 
             ValidationResultFormatter.AcquireTagsFromOutput((out_args as OutputEventArgs).Output);
-            ValidationClassifier.InvalidateActiveClassifier();
+            Classifier.InvalidateActiveClassifier();
 
             // Wait for info worker thread to finish
             while (InfoWorker.CancellationPending) { System.Threading.Thread.Sleep(50); }
 
             OutputWindowPane.OutputStringThreadSafe("\n");
-            OutputWindowPane.OutputStringThreadSafe(ValidationResultFormatter.FormatOutputWindowMessage((out_args as OutputEventArgs).Output));
+            OutputWindowPane.OutputStringThreadSafe(
+                ValidationResultFormatter.FormatOutputWindowMessage((out_args as OutputEventArgs).Output));
             OutputWindowPane.OutputStringThreadSafe(">> Finished");
 
             IsUpdateInProgress = false;
@@ -105,7 +111,7 @@ namespace LLVM.ClangTidy
 
         private static void BackgroundWorkerDoWork(object sender, DoWorkEventArgs args)
         {
-            BackgroundWorker worker = sender as BackgroundWorker;
+            var worker = sender as BackgroundWorker;
             int i = 0;
 
             while (true)
@@ -135,7 +141,7 @@ namespace LLVM.ClangTidy
             OutputWindowPane.Activate();
 
             // Force output window to front
-            DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+            var dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
             dte.ExecuteCommand("View.Output");
         }
     }

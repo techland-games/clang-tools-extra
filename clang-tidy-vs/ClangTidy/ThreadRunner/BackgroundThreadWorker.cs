@@ -4,6 +4,9 @@ using System.Text;
 
 namespace LLVM.ClangTidy
 {
+    /// <summary>
+    /// Thread worker's results returned when event ThreadDone fires.
+    /// </summary>
     internal class OutputEventArgs : EventArgs
     {
         public readonly string Output;
@@ -14,6 +17,10 @@ namespace LLVM.ClangTidy
         }
     }
 
+    /// <summary>
+    /// Class responsible for launching clang-tidy.exe process and returning
+    /// it's results in OutputEventArgs.
+    /// </summary>
     public class BackgroundThreadWorker
     {
         public event EventHandler ThreadDone;
@@ -30,7 +37,9 @@ namespace LLVM.ClangTidy
             ThreadDone?.Invoke(this, new OutputEventArgs(result));
         }
 
-        // Run External executable using background thread
+        /// <summary>
+        /// Run external clang-tidy executable and return results.
+        /// </summary>
         private string RunExternalExe(string filename, string arguments = null)
         {
             var process = new System.Diagnostics.Process();

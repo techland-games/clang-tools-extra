@@ -5,6 +5,11 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace LLVM.ClangTidy
 {
+    /// <summary>
+    /// This class allows augmentations of Intellisense quick info when 
+    /// a user hovers his mouse over one of clang-tidy validation warnings in code.
+    /// Quick info content augmentations are performed in QuickInfoSource.
+    /// </summary>
     internal class QuickInfoController : IIntellisenseController
     {
         private ITextView TextView;

@@ -7,6 +7,12 @@ using System.Linq;
 
 namespace LLVM.ClangTidy
 {
+    /// <summary>
+    /// This class searches for clang-tidy validation warnings (implicitly using 
+    /// ValidationTagger's functionality) in text span provided by QuickInfoController.
+    /// Results are augmented for Intellisense quick info using message stored in 
+    /// ValidationTag by ValidationTagger.
+    /// </summary>
     internal class QuickInfoSource : IQuickInfoSource
     {
         private ITagAggregator<ValidationTag> Aggregator;

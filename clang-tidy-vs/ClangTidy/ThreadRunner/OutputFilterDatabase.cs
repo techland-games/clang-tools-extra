@@ -37,7 +37,7 @@ namespace LLVM.ClangTidy
         {
             using (StringReader Reader = new StringReader(Resources.VSOutputFilter))
             {
-                Deserializer D = new Deserializer(namingConvention: new PascalCaseNamingConvention());
+                var D = new Deserializer(namingConvention: new PascalCaseNamingConvention());
                 var Root = D.Deserialize<FilterRoot>(Reader);
                 Filters_ = Root.Filters;
 

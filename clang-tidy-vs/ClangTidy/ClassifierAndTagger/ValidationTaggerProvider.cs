@@ -8,6 +8,9 @@ namespace LLVM.ClangTidy
 {
     /// <summary>
     /// Export a <see cref="ITaggerProvider"/>
+    /// This class creates ValidationTagger for given text buffer allowing other 
+    /// MEF components to use ValidationTagger's functionality of searching for text 
+    /// spans containing clang-tidy warnings.
     /// </summary>
     [Export(typeof(ITaggerProvider))]
     [ContentType("code")]
