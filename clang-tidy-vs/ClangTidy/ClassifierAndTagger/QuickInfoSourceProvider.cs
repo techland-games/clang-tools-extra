@@ -8,7 +8,7 @@ namespace LLVM.ClangTidy
 {
     /// <summary>
     /// QuickInfoSourceProvider creates QuickInfoSource for text buffers currently 
-    /// processed by Intellisense quick info. In this case text buffer is provided 
+    /// processed by Intellisense quick info. In this case the text buffer is provided 
     /// by QuickInfoController.
     /// </summary>
     [Export(typeof(IQuickInfoSourceProvider))]

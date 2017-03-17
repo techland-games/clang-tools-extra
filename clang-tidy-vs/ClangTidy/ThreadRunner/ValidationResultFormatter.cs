@@ -24,7 +24,7 @@ namespace LLVM.ClangTidy
         static public List<SingleValidationResult> ValidationResults { private set; get; } = new List<SingleValidationResult>();
 
         /// <summary>
-        /// Use filters/replacement patterns read from yaml file to format or remove lines from output.
+        /// Use filters/replacement patterns (read from yaml file) to format (or remove) lines in output.
         /// </summary>
         public static string FormatOutputWindowMessage(string message)
         {

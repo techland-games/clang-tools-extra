@@ -34,27 +34,24 @@ namespace LLVM.ClangTidy
 
             string activeDocumentFullPath = Utility.GetActiveSourceFileFullPath(true);
 
-            if (activeDocumentFullPath != null)
+            if (activeDocumentFullPath != null && !IsUpdateInProgress)
             {
+                IsUpdateInProgress = true;
+
+                StartBackgroundInfoWorker();
+
                 string arguments = "-header-filter=" + Utility.GetActiveSourceFileHeaderName();
                 arguments += " " + activeDocumentFullPath;
 
-                if (!IsUpdateInProgress)
-                {
-                    IsUpdateInProgress = true;
+                OutputWindowPane.OutputStringThreadSafe(">> Running " + ClangTidyExeName +
+                    " with arguments: '" + arguments + "'\n");
 
-                    StartBackgroundInfoWorker();
+                BackgroundThreadWorker worker = new BackgroundThreadWorker(ExtensionDirPath +
+                    "\\" + ClangTidyExeName, arguments);
+                worker.ThreadDone += HandleThreadFinished;
 
-                    OutputWindowPane.OutputStringThreadSafe(">> Running " + ClangTidyExeName + 
-                        " with arguments: '" + arguments + "'\n");
-
-                    BackgroundThreadWorker worker = new BackgroundThreadWorker(ExtensionDirPath + 
-                        "\\" + ClangTidyExeName, arguments);
-                    worker.ThreadDone += HandleThreadFinished;
-
-                    System.Threading.Thread workerThread = new System.Threading.Thread(worker.Run);
-                    workerThread.Start();
-                }
+                System.Threading.Thread workerThread = new System.Threading.Thread(worker.Run);
+                workerThread.Start();
             }
             else
             {
@@ -97,13 +94,13 @@ namespace LLVM.ClangTidy
             if (InfoWorker == null)
             {
                 InfoWorker = new BackgroundWorker();
+                InfoWorker.WorkerReportsProgress = true;
+                InfoWorker.WorkerSupportsCancellation = true;
+
+                InfoWorker.DoWork += new DoWorkEventHandler(BackgroundWorkerDoWork);
+                InfoWorker.ProgressChanged += new ProgressChangedEventHandler(BackgroundWorkerUpdateProgress);
             }
 
-            InfoWorker.WorkerReportsProgress = true;
-            InfoWorker.WorkerSupportsCancellation = true;
-
-            InfoWorker.DoWork += new DoWorkEventHandler(BackgroundWorkerDoWork);
-            InfoWorker.ProgressChanged += new ProgressChangedEventHandler(BackgroundWorkerUpdateProgress);
             InfoWorker.RunWorkerAsync();
 
             return true;
@@ -112,23 +109,22 @@ namespace LLVM.ClangTidy
         private static void BackgroundWorkerDoWork(object sender, DoWorkEventArgs args)
         {
             var worker = sender as BackgroundWorker;
-            int i = 0;
+            const int sleepDuration = 500;
+            float executionDuration = 0.0f;
 
-            while (true)
+            while (!worker.CancellationPending)
             {
-                if (worker.CancellationPending)
-                {
-                    break;
-                }
+                System.Threading.Thread.Sleep(sleepDuration);
+                executionDuration += (float)sleepDuration / 1000.0f;
 
-                System.Threading.Thread.Sleep(500);
-                i++;
-                worker.ReportProgress(i);
+                // Skip updates for short tasks.
+                if (executionDuration > 1.0f)
+                    worker.ReportProgress((int)executionDuration);
             }
         }
 
         /// <summary>
-        /// Just put comma every now and then to ensure user clang-tidy is still working
+        /// Just put comma every now and then to ensure the user clang-tidy is still working
         /// </summary>
         private static void BackgroundWorkerUpdateProgress(object sender, ProgressChangedEventArgs args)
         {

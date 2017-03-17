@@ -8,10 +8,9 @@ using Microsoft.VisualStudio.Text;
 namespace LLVM.ClangTidy
 {
     /// <summary>
-    /// This class asks implicitly ValidationTagger for text spans containing clang-tidy 
-    /// validation warning in given text buffer (visible text in code).
-    /// Usually single SnapshotSpan is one of visible lines or selections of text in text editor 
-    /// and a Snapshot is the content of a whole file opened in editor window.
+    /// This class assigns classification types to given text by implicitly asking ValidationTagger 
+    /// for text spans containing clang-tidy validation warnings in given text buffer.
+    /// Generally, the span in question is the displayed portion of the file currently open in the Editor.
     /// </summary>
     class Classifier : IClassifier
     {
@@ -27,8 +26,10 @@ namespace LLVM.ClangTidy
         }
 
         /// <summary>
-        /// Get every ValidationTag instance within the given span. Generally, the span in 
-        /// question is the displayed portion of the file currently open in the Editor
+        /// Get every ValidationTag instance within the given span.
+        /// Usually a single SnapshotSpan is the content of one of the visible lines or 
+        /// selections of text in the text editor and a Snapshot is the content of the
+        /// whole file opened in editor window.
         /// </summary>
         /// <param name="span">The span of text that will be searched for validation tags</param>
         /// <returns>A list of every relevant tag in the given span</returns>

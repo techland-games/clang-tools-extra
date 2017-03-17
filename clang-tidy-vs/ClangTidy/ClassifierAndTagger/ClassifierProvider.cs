@@ -8,7 +8,7 @@ using System.Windows.Media;
 namespace LLVM.ClangTidy
 {
     /// <summary>
-    /// This class creates Classifier that will search for clang-tidy validation warnings in 
+    /// This class creates Classifier that will search for clang-tidy validation warnings in the
     /// visible text. Results will be highlighted in code using ValidationWarningFormat classification.
     /// Export a <see cref="IClassifierProvider"/>
     /// </summary>

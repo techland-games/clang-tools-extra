@@ -19,7 +19,7 @@ namespace LLVM.ClangTidy
 
     /// <summary>
     /// Class responsible for launching clang-tidy.exe process and returning
-    /// it's results in OutputEventArgs.
+    /// it's results as OutputEventArgs.
     /// </summary>
     public class BackgroundThreadWorker
     {
