@@ -49,24 +49,20 @@ public:
     CT_UpperCase,
     CT_CamelCase,
     CT_CamelSnakeCase,
-    CT_CamelSnakeBack,
-    CT_IgnoreCase
+    CT_CamelSnakeBack
   };
 
   struct NamingStyle {
-    NamingStyle() : Case(CT_AnyCase) {}
+    NamingStyle() = default;
 
-    NamingStyle(CaseType Case, const std::string &Prefix,
+    NamingStyle(llvm::Optional<CaseType> Case, 
+                const std::string &Prefix,
                 const std::string &Suffix)
         : Case(Case), Prefix(Prefix), Suffix(Suffix) {}
 
-    CaseType Case;
+    llvm::Optional<CaseType> Case;
     std::string Prefix;
     std::string Suffix;
-
-    bool isSet() const {
-      return !(Case == CT_AnyCase && Prefix.empty() && Suffix.empty());
-    }
   };
 
   /// \brief Holds an identifier name check failure, tracking the kind of the
@@ -102,7 +98,7 @@ public:
   void expandMacro(const Token &MacroNameTok, const MacroInfo *MI);
 
 private:
-  std::vector<NamingStyle> NamingStyles;
+  std::vector<llvm::Optional<NamingStyle> > NamingStyles;
   bool IgnoreFailedSplit;
   NamingCheckFailureMap NamingCheckFailures;
 };
