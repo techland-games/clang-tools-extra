@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace LLVM.ClangTidy
 {
@@ -21,6 +22,7 @@ namespace LLVM.ClangTidy
             public string HighlightSymbol;
         }
 
+        static public ReaderWriterLockSlim ValidationResultsLock = new ReaderWriterLockSlim();
         static public List<SingleValidationResult> ValidationResults { private set; get; } = new List<SingleValidationResult>();
 
         /// <summary>
@@ -50,6 +52,8 @@ namespace LLVM.ClangTidy
             //                   (^ character pointing at warning/error in code line)
             string pattern = @"(.*):(\d+):(\d+):\s(.*):\s(.*)\s\[(.*)\]\r\n(.*)\r";
 
+            ValidationResultsLock.EnterWriteLock();
+
             var matches = Regex.Matches(message, pattern);
             foreach (Match match in matches)
             {
@@ -76,6 +80,8 @@ namespace LLVM.ClangTidy
                     ValidationResults.Add(res);
                 }
             }
+
+            ValidationResultsLock.ExitWriteLock();
         }
     }
 }
