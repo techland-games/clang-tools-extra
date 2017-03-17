@@ -22,7 +22,7 @@ if (BUILD_CLANG_TIDY_VS_PLUGIN)
       "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidy/source.extension.vsixmanifest")
 
   add_custom_target(clang_tidy_vsix ALL
-      COMMAND devenv "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidy.sln" /Build Release
+      devenv "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidy.sln" /Build Release
       DEPENDS clang_tidy_exe_for_vsix "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidy/source.extension.vsixmanifest"
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${CMAKE_CURRENT_SOURCE_DIR}/ClangTidy/bin/Release/ClangTidy.vsix"
