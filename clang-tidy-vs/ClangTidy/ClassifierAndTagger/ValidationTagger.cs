@@ -48,6 +48,8 @@ namespace LLVM.ClangTidy
         {
             foreach (SnapshotSpan curSpan in spans)
             {
+                ValidationResultFormatter.ValidationResultsLock.EnterReadLock();
+
                 foreach (ValidationResultFormatter.SingleValidationResult res in ValidationResultFormatter.ValidationResults)
                 {
                     // Check if clang-tidy validation result is inside given span (file and line number comparison)
@@ -66,6 +68,8 @@ namespace LLVM.ClangTidy
                         }
                     }
                 }
+
+                ValidationResultFormatter.ValidationResultsLock.ExitReadLock();
             }
         }
     }
