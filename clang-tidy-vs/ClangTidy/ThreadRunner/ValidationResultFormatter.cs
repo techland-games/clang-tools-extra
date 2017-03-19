@@ -28,9 +28,9 @@ namespace LLVM.ClangTidy
         /// <summary>
         /// Use filters/replacement patterns (read from yaml file) to format (or remove) lines in output.
         /// </summary>
-        public static string FormatOutputWindowMessage(string message)
+        public static string FormatOutputWindowMessage(string message, string checkedFile)
         {
-            foreach (var filter in OutputFilterDatabase.Filters)
+            foreach (var filter in OutputFilterDatabase.GetFilters(checkedFile))
             {
                 var rgx = new Regex(filter.Pattern, filter.Multiline ? RegexOptions.Multiline : RegexOptions.None);
                 message = rgx.Replace(message, filter.Replacement);

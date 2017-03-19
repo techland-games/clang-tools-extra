@@ -183,7 +183,9 @@
     <None Include="Key.snk" />
     <None Include="packages.config" />
     <None Include="Resources\ClangTidyChecks.yaml" />
-    <None Include="Resources\VSOutputFilter.yaml" />
+    <Content Include="Resources\.clang-tidy-vsfilters">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>

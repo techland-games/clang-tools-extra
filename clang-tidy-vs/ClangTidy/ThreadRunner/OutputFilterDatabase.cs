@@ -22,10 +22,14 @@ namespace LLVM.ClangTidy
 
     /// <summary>
     /// Reads the list of output window regex filters from Yaml
+    /// There are basic filters defined in this C# solution and optional filters.
+    /// Optional filters are searched for upwards in file system hierarchy starting
+    /// from folder where currently validated source file is placed.
     /// </summary>
     public static class OutputFilterDatabase
     {
-        static FilterInfo[] Filters_ = null;
+        static List<FilterInfo> BasicFilters = new List<FilterInfo>();
+        static string FiltersFileName = ".clang-tidy-vsfilters";
 
         class FilterRoot
         {
@@ -35,25 +39,49 @@ namespace LLVM.ClangTidy
 
         static OutputFilterDatabase()
         {
-            using (StringReader Reader = new StringReader(Resources.VSOutputFilter))
+            string basicConfigPath = Path.Combine(Utility.GetVsixInstallPath(), "Resources", FiltersFileName);
+            if (File.Exists(basicConfigPath))
+                ReadConfigFile(basicConfigPath, ref BasicFilters);
+        }
+
+        /// <summary>
+        /// Returns filters valid for source file currently validated by clang-tidy
+        /// </summary>
+        public static IEnumerable<FilterInfo> GetFilters(string validatedFilePath)
+        {
+            var customFilters = BasicFilters;
+
+            ReadCustomConfigFiles(validatedFilePath, ref customFilters);
+
+            return customFilters;
+        }
+
+        private static void ReadCustomConfigFiles(string validatedFilePath, ref List<FilterInfo> filters)
+        {
+            foreach (string P in Utility.SplitPath(validatedFilePath))
+            {
+                string configFile = Path.Combine(P, FiltersFileName);
+                if (!File.Exists(configFile))
+                    continue;
+
+                ReadConfigFile(configFile, ref filters);
+            }
+        }
+
+        private static void ReadConfigFile(string filePath, ref List<FilterInfo> filters)
+        {
+            using (StreamReader Reader = new StreamReader(filePath))
             {
                 var D = new Deserializer(namingConvention: new PascalCaseNamingConvention());
                 var Root = D.Deserialize<FilterRoot>(Reader);
-                Filters_ = Root.Filters;
 
-                foreach (var filter in Filters_)
+                foreach (var filter in Root.Filters)
                 {
                     if (filter.Replacement == null)
                         filter.Replacement = "";
                 }
-            }
-        }
 
-        public static IEnumerable<FilterInfo> Filters
-        {
-            get
-            {
-                return Filters_;
+                filters.AddRange(Root.Filters);
             }
         }
     }

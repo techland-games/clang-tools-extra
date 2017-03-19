@@ -26,11 +26,13 @@ namespace LLVM.ClangTidy
         public event EventHandler ThreadDone;
         private string ExeName;
         private string Arguments;
+
         public BackgroundThreadWorker(String exeName, String arguments)
         {
             ExeName = exeName;
             Arguments = arguments;
         }
+
         public void Run()
         {
             string result = RunExternalExe(ExeName, Arguments);

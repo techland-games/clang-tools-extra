@@ -1,0 +1,6 @@
+---
+Filters:
+  # Format output allowing VS internal auto navigation to source code line and column
+  - Pattern:     ":(\\d+):(\\d+)"
+    Replacement: "($1,$2)"
+

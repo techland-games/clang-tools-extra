@@ -101,20 +101,13 @@ namespace LLVM.ClangTidy {
         /// <summary>
         ///   Looks up a localized string similar to ---
         ///Filters:
-        ///  #Format output allowing auto navigation to source code line and column
-        ///  - Pattern:     &quot;:(\d+):(\d+)&quot;
+        ///  # Format output allowing VS internal auto navigation to source code line and column
+        ///  - Pattern:     &quot;:(\\d+):(\\d+)&quot;
         ///    Replacement: &quot;($1,$2)&quot;
-        ///  - Pattern:     &quot;.*(TPreprocessorGenerated).*(file not found).*\n.*\n.*\n&quot;
-        ///    Replacement:
-        ///  - Pattern:     &quot;.*file not found.*\n#include( *)&lt;.*&gt;.*\n.*&quot;
-        ///    Replacement:
-        ///  - Pattern:     &quot;\nwarning: .*\n&quot;
-        ///    Replacement: &quot;\n&quot;
-        ///.
         /// </summary>
-        internal static string VSOutputFilter {
+        internal static string VSOutputFilters {
             get {
-                return ResourceManager.GetString("VSOutputFilter", resourceCulture);
+                return ResourceManager.GetString("VSOutputFilters", resourceCulture);
             }
         }
     }

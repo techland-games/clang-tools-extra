@@ -18,6 +18,7 @@ namespace LLVM.ClangTidy
         private static string ExtensionDirPath;
         private static BackgroundWorker InfoWorker;
         private static volatile bool IsUpdateInProgress = false;
+        private static string CheckedDocumentFullPath;
 
         static ClangTidyRunner()
         {
@@ -34,24 +35,28 @@ namespace LLVM.ClangTidy
 
             string activeDocumentFullPath = Utility.GetActiveSourceFileFullPath(true);
 
-            if (activeDocumentFullPath != null && !IsUpdateInProgress)
+            if (activeDocumentFullPath != null)
             {
-                IsUpdateInProgress = true;
+                if (!IsUpdateInProgress)
+                {
+                    IsUpdateInProgress = true;
+                    CheckedDocumentFullPath = activeDocumentFullPath;
 
-                StartBackgroundInfoWorker();
+                    StartBackgroundInfoWorker();
 
-                string arguments = "-header-filter=" + Utility.GetActiveSourceFileHeaderName();
-                arguments += " " + activeDocumentFullPath;
+                    string arguments = "-header-filter=" + Utility.GetActiveSourceFileHeaderName();
+                    arguments += " " + CheckedDocumentFullPath;
 
-                OutputWindowPane.OutputStringThreadSafe(">> Running " + ClangTidyExeName +
-                    " with arguments: '" + arguments + "'\n");
+                    OutputWindowPane.OutputStringThreadSafe(">> Running " + ClangTidyExeName +
+                        " with arguments: '" + arguments + "'\n");
 
-                BackgroundThreadWorker worker = new BackgroundThreadWorker(ExtensionDirPath +
-                    "\\" + ClangTidyExeName, arguments);
-                worker.ThreadDone += HandleThreadFinished;
+                    BackgroundThreadWorker worker = new BackgroundThreadWorker(ExtensionDirPath +
+                        "\\" + ClangTidyExeName, arguments);
+                    worker.ThreadDone += HandleThreadFinished;
 
-                System.Threading.Thread workerThread = new System.Threading.Thread(worker.Run);
-                workerThread.Start();
+                    System.Threading.Thread workerThread = new System.Threading.Thread(worker.Run);
+                    workerThread.Start();
+                }
             }
             else
             {
@@ -67,15 +72,16 @@ namespace LLVM.ClangTidy
             InfoWorker.CancelAsync();
 
             ValidationResultFormatter.AcquireTagsFromOutput((out_args as OutputEventArgs).Output);
-            Classifier.InvalidateActiveClassifier();
 
             // Wait for info worker thread to finish
             while (InfoWorker.CancellationPending) { System.Threading.Thread.Sleep(50); }
 
             OutputWindowPane.OutputStringThreadSafe("\n");
             OutputWindowPane.OutputStringThreadSafe(
-                ValidationResultFormatter.FormatOutputWindowMessage((out_args as OutputEventArgs).Output));
+                ValidationResultFormatter.FormatOutputWindowMessage((out_args as OutputEventArgs).Output, CheckedDocumentFullPath));
             OutputWindowPane.OutputStringThreadSafe(">> Finished");
+
+            Classifier.InvalidateActiveClassifier();
 
             IsUpdateInProgress = false;
         }
@@ -117,7 +123,7 @@ namespace LLVM.ClangTidy
                 System.Threading.Thread.Sleep(sleepDuration);
                 executionDuration += (float)sleepDuration / 1000.0f;
 
-                // Skip updates for short tasks.
+                // Do not report update progress for short tasks.
                 if (executionDuration > 1.0f)
                     worker.ReportProgress((int)executionDuration);
             }
