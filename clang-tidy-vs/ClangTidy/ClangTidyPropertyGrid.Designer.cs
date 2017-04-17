@@ -1,4 +1,4 @@
-﻿namespace LLVM.ClangTidy
+namespace LLVM.ClangTidy
 {
     partial class ClangTidyPropertyGrid
     {

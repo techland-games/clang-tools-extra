@@ -1,4 +1,4 @@
-﻿//===-- ClangTidyPackages.cs - VSPackage for clang-tidy ----------*- C# -*-===//
+//===-- ClangTidyPackages.cs - VSPackage for clang-tidy ----------*- C# -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //

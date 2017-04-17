@@ -1,4 +1,4 @@
-﻿namespace LLVM.ClangTidy
+namespace LLVM.ClangTidy
 {
     static class PkgCmdIDList
     {

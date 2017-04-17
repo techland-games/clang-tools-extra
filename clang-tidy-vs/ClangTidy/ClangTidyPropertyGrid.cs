@@ -1,4 +1,4 @@
-﻿//===-- ClangTidyPropertyGrid.cs - UI for configuring clang-tidy -*- C# -*-===//
+//===-- ClangTidyPropertyGrid.cs - UI for configuring clang-tidy -*- C# -*-===//
 //
 //                     The LLVM Compiler Infrastructure
 //
